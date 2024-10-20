@@ -5,6 +5,7 @@ namespace Actors
 {
     public abstract class Actor
     {
+        public event Action OnUpdate = delegate { };
         public event Action<GameActionData, Actor> OnExecute = delegate {};
         public event Action<Actor> OnDeath = delegate {  };
         
@@ -24,6 +25,12 @@ namespace Actors
         public void Set(ActorConfig config)
         {
             _config = config;
+
+            if (_config == null)
+            {
+                return;
+            }
+            
             _hp = _config.hp;
             _actionIdx = 0;
         }
@@ -33,9 +40,9 @@ namespace Actors
             GameActionData currentAction = _config.gameActionLoop[_actionIdx];
             Actor target = GetTarget(currentAction.config.targetType);
             currentAction.config.gameAction.Execute(this, target, currentAction.power);
-            OnExecute?.Invoke(currentAction, target);
-
             _actionIdx = (_actionIdx + 1) % _config.gameActionLoop.Count;
+            
+            OnExecute?.Invoke(currentAction, target);
         }
 
         public void UpdateHp(int modifier)
@@ -53,6 +60,14 @@ namespace Actors
             {
                 OnDeath?.Invoke(this);
             }
+            
+            OnUpdate?.Invoke();
+        }
+
+        public void AddDefence(int modifier)
+        {
+            _defence += modifier;
+            OnUpdate?.Invoke();
         }
 
         public int GetCurrentActionIdx()
@@ -60,11 +75,6 @@ namespace Actors
             return _actionIdx;
         }
 
-        public void AddDefence(int modifier)
-        {
-            _defence += modifier;
-        }
-        
         public int GetHp()
         {
             return _hp;
@@ -82,7 +92,7 @@ namespace Actors
         
         public bool IsDead()
         {
-            return _hp <= 0;
+            return _config == null || _hp <= 0;
         }
         
         protected abstract Actor GetTarget(TargetType targetType);

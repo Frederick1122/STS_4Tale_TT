@@ -11,29 +11,29 @@ namespace Game
 {
     public class Battle : Singleton<Battle>
     {
-        private const int WAVE_COUNT = 1;
+        private const int WAVE_COUNT = 2;
         
         private const string DECK_CONFIG = "Configs/DeckConfig";
         private const string PLAYER_CONFIG_PATH = "Configs/Actors/Player";
 
         public event Action OnWin = delegate {  };
         public event Action OnDefeat = delegate {  };
-
-        private CardLoop _cardLoop = new();
-        private ActorsController _actorsController = new();
+        public event Action OnNextTurn = delegate {  };
+        
+        private readonly CardLoop _cardLoop = new();
+        private readonly ActorsController _actorsController = new();
         
         private int _waveCounter = 0;
         
         public void Init()
         {
             DeckConfig deckConfig = Resources.Load<DeckConfig>(DECK_CONFIG);
+            ActorConfig playerConfig = Resources.Load<ActorConfig>(PLAYER_CONFIG_PATH);
+            
+            _actorsController.Init(playerConfig);
+            _actorsController.OnDeath += HandleDeath;
             
             _cardLoop.Init(deckConfig.cardStacks);
-
-            ActorConfig playerConfig = Resources.Load<ActorConfig>(PLAYER_CONFIG_PATH);
-            _actorsController.Init(playerConfig);
-            _actorsController.GenerateRandomNumberOfEnemies();
-            _actorsController.OnDeath += HandleDeath;
         }
 
         public void Terminate()
@@ -47,6 +47,7 @@ namespace Game
         public void StartBattle()
         {
             _cardLoop.Refresh();
+            _actorsController.GenerateRandomNumberOfEnemies();
             _waveCounter = 1;
             StartTurn();
         }
@@ -54,6 +55,7 @@ namespace Game
         public void StartTurn()
         {
             _cardLoop.StartTurn();
+            OnNextTurn?.Invoke();
         }
         
         public void EndTurn()
@@ -63,6 +65,16 @@ namespace Game
             StartTurn();
         }
 
+        public int GetWaveCount()
+        {
+            return _waveCounter;
+        }
+
+        public int GetMaxWaveCount()
+        {
+            return WAVE_COUNT;
+        }
+        
         public ICardLoopFacade GetCardLoopFacade()
         {
             return _cardLoop;
@@ -96,6 +108,7 @@ namespace Game
                     _waveCounter++;
                     _cardLoop.Refresh();
                     _actorsController.GenerateRandomNumberOfEnemies();
+                    StartTurn();
                 }
                 else
                 {

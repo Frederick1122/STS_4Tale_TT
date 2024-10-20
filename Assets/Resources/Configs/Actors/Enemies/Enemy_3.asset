@@ -15,6 +15,8 @@ MonoBehaviour:
   configKey: Enemy_3
   configName: Enemy_3
   configDescription: 
+  sprite: {fileID: -346139116, guid: 6ff2f2a3b3e5b854c8f0c8919347035e, type: 3}
+  xFlip: 0
   actorType: 1
   hp: 15
   gameActionLoop:

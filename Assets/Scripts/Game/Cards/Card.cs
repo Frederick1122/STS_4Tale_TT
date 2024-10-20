@@ -15,6 +15,7 @@ namespace Game.Cards
     public class Card :  ICardFacade, IPoolObject
     {
         public event Action<int> OnExecute = delegate {  };
+        public event Action<int> OnPreExecute = delegate {  };
         
         private CardConfig _currentConfig;
 
@@ -46,6 +47,7 @@ namespace Game.Cards
                 actionConfig.config.gameAction.Execute(owner, targets, actionConfig.power);
             }
 
+            OnPreExecute?.Invoke(_idx);
             OnExecute?.Invoke(_idx);
         }
     }

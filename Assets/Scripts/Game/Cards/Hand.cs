@@ -9,17 +9,21 @@ namespace Game.Cards
     public interface IHandFacade
     {
         public int GetRemainingEnergy();
+        
         public int GetMaxEnergy();
+        
         public List<ICardFacade> GetAll();
+        
         public void TryExecute(uint idx, Actor owner, Actor target);
+        
         public void TryExecute(uint idx, Actor owner, List<Actor> targets);
     }
     
     public class Hand : IHandFacade
     {
-        //to-do: optimization
         private const int PLAYER_ENERGY_MAX = 3;
 
+        public event Action<int> OnPreExecute = delegate {  }; 
         public event Action<int> OnExecute = delegate {  }; 
 
         private List<Card> _cards;
@@ -81,6 +85,7 @@ namespace Game.Cards
         {
             Card removeCard = TryGet(idx);
             removeCard.OnExecute -= OnExecute;
+            removeCard.OnPreExecute -= OnPreExecute;
             _cards.Remove(removeCard);
             return removeCard;
         }
@@ -110,6 +115,7 @@ namespace Game.Cards
             foreach (Card card in _cards)
             {
                 card.OnExecute += OnExecute;
+                card.OnPreExecute += OnPreExecute;
             }
         }
 
@@ -118,6 +124,7 @@ namespace Game.Cards
             foreach (Card card in _cards)
             {
                 card.OnExecute -= OnExecute;
+                card.OnPreExecute -= OnPreExecute;
             }
         }
     }

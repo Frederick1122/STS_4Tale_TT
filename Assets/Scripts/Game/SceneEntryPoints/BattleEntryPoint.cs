@@ -1,10 +1,15 @@
 ﻿using Extensions;
+using UI.BattleUI;
 using UnityEngine;
+using Visualizers;
 
 namespace Game.SceneEntryPoints
 {
     public class BattleEntryPoint : SceneEntryPoint
     {
+        [SerializeField] private ActorsVisualizer _actorsVisualizer;
+        [SerializeField] private BattleUIController _battleUIController;
+        
         private Battle _battle;
         
         protected override void InitializeManagers()
@@ -12,6 +17,16 @@ namespace Game.SceneEntryPoints
             _battle = CreateNewGameObject<Battle>();
             _battle.Create();
             _battle.Init();
+        }
+
+        protected override void InitializeUI()
+        {
+            _battleUIController.Init();
+        }
+
+        protected override void InitializeGameObjects()
+        {
+            _actorsVisualizer.Init();
         }
 
         protected override void StartScene()

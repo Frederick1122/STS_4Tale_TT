@@ -9,6 +9,7 @@ namespace Actors
 {
     public interface IActorsControllerFacade
     {
+        public event Action OnChangeActors;
         public List<Actor> GetEnemies();
         public Actor GetPlayer();
     }
@@ -17,6 +18,7 @@ namespace Actors
     {
         private const int ENEMIES_MAX_COUNT = 3;
 
+        public event Action OnChangeActors = delegate {  };
         public event Action<Actor> OnDeath = delegate {  };
         
         private ActorConfig _playerConfig;
@@ -38,6 +40,7 @@ namespace Actors
             _player = new Player();
             _player.Init(this);
             _player.Set(_playerConfig);
+            OnChangeActors?.Invoke();
             Subscribe();
         }
 
@@ -96,6 +99,7 @@ namespace Actors
         private void GenerateNewEnemy(int idx)
         {
             _enemies[idx].Set(EnemyLibrary.Instance.GetRandomConfig());
+            OnChangeActors?.Invoke();
         }
 
         private void Subscribe()
@@ -103,7 +107,7 @@ namespace Actors
             Unsubscribe();
             _player.OnDeath += HandleDeath;
 
-            foreach (var enemy in _enemies)
+            foreach (Actor enemy in _enemies)
             {
                 enemy.OnDeath += HandleDeath;
             }
@@ -113,7 +117,7 @@ namespace Actors
         {
             _player.OnDeath -= HandleDeath;
 
-            foreach (var enemy in _enemies)
+            foreach (Actor enemy in _enemies)
             {
                 enemy.OnDeath -= HandleDeath;
             }
@@ -121,6 +125,7 @@ namespace Actors
 
         private void HandleDeath(Actor actor)
         {
+            OnChangeActors?.Invoke();
             OnDeath?.Invoke(actor);
         }
     }

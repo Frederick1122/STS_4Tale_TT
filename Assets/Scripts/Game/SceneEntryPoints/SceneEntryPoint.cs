@@ -7,10 +7,16 @@ namespace Game.SceneEntryPoints
         public void Process()
         {
             InitializeManagers();
+            InitializeUI();
+            InitializeGameObjects();
             StartScene();
         }
 
         protected abstract void InitializeManagers();
+
+        protected abstract void InitializeUI();
+        protected abstract void InitializeGameObjects();
+        
         protected abstract void StartScene();
     }
 }
