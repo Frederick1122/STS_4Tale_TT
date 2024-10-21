@@ -1,9 +1,24 @@
-﻿namespace Services
+﻿using System;
+using Core;
+using UnityEngine.SceneManagement;
+
+namespace Services
 {
-    public class ScenesService
+    public class ScenesService : Singleton<ScenesService>
     {
         public const string SCENE_BATTLE = "Battle";
-        
-        //in theory, this is where the logic for working with scenes is written
+
+        public event Action OnPreUnload = delegate {  };
+
+        public void StartBattleScene()
+        {
+            LoadScene(SCENE_BATTLE);
+        }
+
+        private void LoadScene(string sceneName)
+        {
+            OnPreUnload?.Invoke();
+            SceneManager.LoadScene(sceneName);
+        }
     }
 }

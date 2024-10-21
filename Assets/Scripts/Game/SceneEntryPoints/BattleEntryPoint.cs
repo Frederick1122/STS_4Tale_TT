@@ -11,7 +11,15 @@ namespace Game.SceneEntryPoints
         [SerializeField] private BattleUIController _battleUIController;
         
         private Battle _battle;
-        
+
+        public override void Unload()
+        {
+            _actorsVisualizer.Terminate();
+            _battleUIController.Terminate();
+            
+            _battle.Terminate();
+        }
+
         protected override void InitializeManagers()
         {
             _battle = CreateNewGameObject<Battle>();

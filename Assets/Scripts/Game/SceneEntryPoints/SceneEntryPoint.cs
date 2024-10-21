@@ -12,6 +12,8 @@ namespace Game.SceneEntryPoints
             StartScene();
         }
 
+        public abstract void Unload(); 
+        
         protected abstract void InitializeManagers();
 
         protected abstract void InitializeUI();

@@ -42,12 +42,13 @@ namespace Game.Cards
 
         public void Execute(Actor owner, List<Actor> targets)
         {
-            foreach (var actionConfig in _currentConfig.actions)
+            OnPreExecute?.Invoke(_idx);
+
+            foreach (GameActionData actionConfig in _currentConfig.actions)
             {
                 actionConfig.config.gameAction.Execute(owner, targets, actionConfig.power);
             }
 
-            OnPreExecute?.Invoke(_idx);
             OnExecute?.Invoke(_idx);
         }
     }

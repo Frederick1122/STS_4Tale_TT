@@ -92,7 +92,7 @@ namespace Game.Cards
 
         public List<Card> RemoveAll()
         {
-            var removeCards = _cards.ToList(); 
+            List<Card> removeCards = _cards.ToList(); 
             _cards.Clear(); 
             return removeCards;
         }

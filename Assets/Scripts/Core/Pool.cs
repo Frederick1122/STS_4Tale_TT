@@ -9,7 +9,7 @@ namespace Core
 
         public void Add(IEnumerable<T> poolObjects)
         {
-            foreach (var poolObject in poolObjects)
+            foreach (T poolObject in poolObjects)
             {
                 Add(poolObject);
             }

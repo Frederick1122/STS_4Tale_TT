@@ -11,13 +11,12 @@ namespace Game
 {
     public class Battle : Singleton<Battle>
     {
-        private const int WAVE_COUNT = 2;
+        private const int WAVE_COUNT = 3;
         
         private const string DECK_CONFIG = "Configs/DeckConfig";
         private const string PLAYER_CONFIG_PATH = "Configs/Actors/Player";
 
-        public event Action OnWin = delegate {  };
-        public event Action OnDefeat = delegate {  };
+        public event Action<bool> OnEndGame = delegate {  };
         public event Action OnNextTurn = delegate {  };
         
         private readonly CardLoop _cardLoop = new();
@@ -91,7 +90,7 @@ namespace Game
             
             if (actor.GetConfig().actorType == ActorType.Player)
             {
-                OnDefeat?.Invoke();
+                OnEndGame?.Invoke(false);
             }
             else
             {
@@ -112,7 +111,7 @@ namespace Game
                 }
                 else
                 {
-                    OnWin?.Invoke();
+                    OnEndGame?.Invoke(true);
                 }
             }
         }

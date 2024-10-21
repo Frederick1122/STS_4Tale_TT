@@ -6,7 +6,7 @@ public class UIView : MonoBehaviour
     {
         gameObject.SetActive(true);
 
-        for (var i = 0; i < transform.childCount; i++)
+        for (int i = 0; i < transform.childCount; i++)
         {
             transform.GetChild(i).gameObject.SetActive(true);
         }
@@ -16,7 +16,7 @@ public class UIView : MonoBehaviour
     {
         gameObject.SetActive(false);
 
-        for (var i = 0; i < transform.childCount; i++)
+        for (int i = 0; i < transform.childCount; i++)
         {
             transform.GetChild(i).gameObject.SetActive(false);
         }

@@ -13,16 +13,6 @@ namespace UI.BattleUI.CardUI
         private ICardFacade _card;
         private readonly CardUIModel _model = new();
 
-        public override void Show()
-        {
-            base.Show();
-        }
-
-        public override void Hide()
-        {
-            base.Hide();    
-        }
-
         public override void Init()
         {
             _cardLoop = Battle.Instance.GetCardLoopFacade();
@@ -34,19 +24,13 @@ namespace UI.BattleUI.CardUI
             base.Init();
         }
 
-        private void OnDestroy()
+        public override void Terminate()
         {
-            CardUIView view = GetView<CardUIView>();
-            if (view != null)
-            {
-                view.OnTrySelect -= HandleTrySelect;
-            }
-
-            if (_cardLoop != null)
-            {
-                _cardLoop.OnHandChanged -= HandleHandChanged;
-                _cardLoop.OnCurrentCardChanged -= HandleSelect;
-            }
+            GetView<CardUIView>().OnTrySelect -= HandleTrySelect;
+            _cardLoop.OnHandChanged -= HandleHandChanged;
+            _cardLoop.OnCurrentCardChanged -= HandleSelect;
+            
+            base.Terminate();
         }
 
         public void Set(ICardFacade cardFacade)

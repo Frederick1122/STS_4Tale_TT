@@ -11,6 +11,8 @@ namespace Game
     {
         private static GameEntryPoint _instance;
 
+        private SceneEntryPoint _currentSceneEntryPoint;
+        
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void StartGame()
         {
@@ -20,32 +22,24 @@ namespace Game
 
         private void Init()
         {
-            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.sceneLoaded += HandleSceneLoaded;
             
-        //    LoadConfiguration();
             InitializeManagers();
-            SetupUI();
         }
-
-        // private void LoadConfiguration()
-        // {
-        //     
-        // }
 
         private void InitializeManagers()
         {
             EnemyLibrary enemyLibrary = CreateNewGameObject<EnemyLibrary>();
             enemyLibrary.Create();
-        }
-        
-        private void SetupUI()
-        {
-            
+
+            ScenesService scenesService = CreateNewGameObject<ScenesService>();
+            scenesService.OnPreUnload += HandleScenePreUnloaded;
+            scenesService.Create();
         }
 
-        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            var sceneName = scene.name;
+            string sceneName = scene.name;
             
             if (sceneName == ScenesService.SCENE_BATTLE)
             {
@@ -53,9 +47,20 @@ namespace Game
             }
         }
 
+        private void HandleScenePreUnloaded()
+        {
+            if (_currentSceneEntryPoint == null)
+            {
+                return;
+            }
+            
+            _currentSceneEntryPoint.Unload();
+        }
+        
         private void StartBattle()
         {
             BattleEntryPoint entryPoint = FindObjectOfType<BattleEntryPoint>();
+            _currentSceneEntryPoint = entryPoint;
             entryPoint.Process();
         }
 

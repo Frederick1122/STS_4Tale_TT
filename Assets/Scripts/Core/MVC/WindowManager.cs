@@ -17,13 +17,13 @@ public abstract class WindowManager : MonoBehaviour
 
     private void InitAll()
     {
-        foreach (var controller in _controllers.Values)
+        foreach (IUiController controller in _controllers.Values)
             controller.Init();
     }
 
     private void HideAll()
     {
-        foreach (var controllerPair in _controllers)
+        foreach (KeyValuePair<Type, IUiController> controllerPair in _controllers)
             controllerPair.Value.Hide();
     }
 
@@ -32,7 +32,7 @@ public abstract class WindowManager : MonoBehaviour
         if (hideOtherWindows)
             HideAll();
 
-        var controller = _controllers[T];
+        IUiController controller = _controllers[T];
         controller.Show();
         return controller;
     }

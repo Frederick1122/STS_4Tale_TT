@@ -8,22 +8,22 @@ namespace Core
     public class BaseLibrary<T> : Singleton<BaseLibrary<T>> where T : BaseConfig
     {
         protected List<string> _paths = new();
-        protected Dictionary<string, T> _allConfigs = new();
+        private Dictionary<string, T> _allConfigs = new();
 
         protected override void Awake()
         {
             base.Awake();
 
-            var allConfigs = new List<object>();
+            List<object> allConfigs = new();
 
-            foreach (var path in _paths)
+            foreach (string path in _paths)
             {
                 allConfigs.AddRange(Resources.LoadAll(path));
             }
 
-            foreach (var config in allConfigs)
+            foreach (object config in allConfigs)
             {
-                var castConfig = (T) config;
+                T castConfig = (T) config;
                 if (_allConfigs.ContainsKey(castConfig.configKey))
                 {
                     Debug.LogAssertion(
@@ -37,7 +37,7 @@ namespace Core
 
         public T GetConfig(string configKey)
         {
-            var config = _allConfigs[configKey];
+            T config = _allConfigs[configKey];
 
             if (config == null)
                 Debug.LogAssertion($"CarLibrary not founded config with this key: {configKey}");
@@ -50,13 +50,13 @@ namespace Core
             if (!_allConfigs.ContainsKey(excludedKey))
                 return _allConfigs.ElementAt(Random.Range(0, _allConfigs.Count)).Value;
 
-            var allConfigsWithoutExcludedKey = _allConfigs.Where(p => p.Key != excludedKey).ToList();
+            List<KeyValuePair<string, T>> allConfigsWithoutExcludedKey = _allConfigs.Where(p => p.Key != excludedKey).ToList();
             return allConfigsWithoutExcludedKey.ElementAt(Random.Range(0, allConfigsWithoutExcludedKey.Count)).Value;
         }
 
         public List<T> GetRandomsConfigs(int count, bool withoutDuplicate = false, string excludedKey = "")
         {
-            var randomConfigs = new List<T>();
+            List<T> randomConfigs = new List<T>();
 
             if (withoutDuplicate)
             {
@@ -66,7 +66,8 @@ namespace Core
                         $"{this} can't execute GetRandomConfig. all configs - {_allConfigs.Count}, need configs - {count}. Add new configs or change parameter 'without duplicates'");
                 }
 
-                var allConfigsWithoutExcludedKey = _allConfigs.Where(p => p.Key != excludedKey).ToList();
+                List<KeyValuePair<string, T>> allConfigsWithoutExcludedKey = 
+                    _allConfigs.Where(p => p.Key != excludedKey).ToList();
 
                 if (allConfigsWithoutExcludedKey.Count < count)
                 {
@@ -80,10 +81,10 @@ namespace Core
                 }
                 else
                 {
-                    var allConfigCopy = _allConfigs;
+                    Dictionary<string, T> allConfigCopy = _allConfigs;
                     while (randomConfigs.Count < count)
                     {
-                        var randomConfig =
+                        KeyValuePair<string, T> randomConfig =
                             allConfigsWithoutExcludedKey.ElementAt(Random.Range(0, allConfigsWithoutExcludedKey.Count));
                         randomConfigs.Add(randomConfig.Value);
                         allConfigCopy.Remove(randomConfig.Key);

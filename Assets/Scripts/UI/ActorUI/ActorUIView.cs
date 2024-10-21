@@ -6,16 +6,16 @@ namespace UI.Actor
 {
     public class ActorUIView : UIView
     {
-        [SerializeField] private Text _name;
+        [SerializeField] private TMP_Text _name;
         
-        [SerializeField] private Text _maxHp;
-        [SerializeField] private Text _hp;
+        [SerializeField] private TMP_Text _maxHp;
+        [SerializeField] private TMP_Text _hp;
         
-        [SerializeField] private Text _defence;
+        [SerializeField] private TMP_Text _defence;
 
         [SerializeField] private Slider _healthBar;
         
-        [SerializeField] private Text _nextAction;
+        [SerializeField] private TMP_Text _nextAction;
         
         public override void UpdateView(UIModel uiModel)
         {

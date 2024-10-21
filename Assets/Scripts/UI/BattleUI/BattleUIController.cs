@@ -2,12 +2,17 @@
 using Game;
 using Game.Cards;
 using UI.BattleUI.CardUI;
+using UI.BattleUI.EndUI;
 using UnityEngine;
 
 namespace UI.BattleUI
 {
     public class BattleUIController : UIController
     {
+        private const string WIN_TEXT = "win";
+        private const string DEFEAT_TEXT = "defeat";
+        
+        [SerializeField] private EndUIController _endUIController;
         [SerializeField] private List<CardUIController> _cardUIControllers;
 
         private ICardLoopFacade _cardLoop;
@@ -18,6 +23,8 @@ namespace UI.BattleUI
         {
             _cardLoop = Battle.Instance.GetCardLoopFacade();
             Battle.Instance.OnNextTurn += HandleNextTurn;
+            Battle.Instance.OnEndGame += HandleEndGame;
+            
             GetView<BattleUIView>().OnEndTurn += HandleEndTurn;
 
             foreach (CardUIController cardUIController in _cardUIControllers)
@@ -26,30 +33,25 @@ namespace UI.BattleUI
                 cardUIController.OnTrySelect += HandleCardTrySelect;
             }
             
+            _endUIController.Init();
+            _endUIController.Hide();
+            
             base.Init();
         }
 
-        private void OnDestroy()
+        public override void Terminate()
         {
-            if (Battle.Instance != null)
-            {
-                Battle.Instance.OnNextTurn -= HandleNextTurn;
-            }
+            Battle.Instance.OnNextTurn -= HandleNextTurn;
+            Battle.Instance.OnEndGame -= HandleEndGame;
 
-            BattleUIView view = GetView<BattleUIView>();
+            GetView<BattleUIView>().OnEndTurn -= HandleEndTurn;
 
-            if (view != null)
-            {
-                view.OnEndTurn -= HandleEndTurn;
-            }
-            
             foreach (CardUIController cardUIController in _cardUIControllers)
             {
-                if (cardUIController != null)
-                {
-                    cardUIController.OnTrySelect += HandleCardTrySelect;
-                }
+                cardUIController.OnTrySelect -= HandleCardTrySelect;
             }
+            
+            base.Terminate();
         }
 
         protected override UIModel GetViewData()
@@ -71,6 +73,12 @@ namespace UI.BattleUI
             UpdateView();
         }
 
+        private void HandleEndGame(bool isWin)
+        {
+            _endUIController.SetText(isWin ? WIN_TEXT : DEFEAT_TEXT);
+            _endUIController.Show();
+        }
+        
         private void HandleEndTurn()
         {
             Battle.Instance.EndTurn();

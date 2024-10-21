@@ -9,6 +9,11 @@ public abstract class UIController : MonoBehaviour, IUiController
         _view.Show();
     }
 
+    public virtual void Terminate()
+    {
+        _view.Terminate();
+    }
+
     public virtual void Hide()
     {
         _view.Hide();
@@ -39,11 +44,13 @@ public abstract class UIController : MonoBehaviour, IUiController
 
 public interface IUiController
 {
+    public virtual void Init() { }
+    
+    public virtual void Terminate() { }
+    
     public void Show() { }
 
     public virtual void Hide() { }
-
-    public virtual void Init() { }
 
     public virtual void UpdateView() { }
 }

@@ -31,9 +31,9 @@ namespace UI.BattleUI.CardUI
             _button.onClick.AddListener(OnTrySelect.Invoke);
         }
 
-        private void OnDestroy()
+        public override void Terminate()
         {
-            _button?.onClick.RemoveAllListeners();
+            _button.onClick.RemoveAllListeners();
         }
 
         public override void UpdateView(UIModel uiModel)

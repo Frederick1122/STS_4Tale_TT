@@ -9,11 +9,14 @@ namespace GameDebug
 {
     public class DebugUI : MonoBehaviour
     {
-        private static readonly Rect TEXT_SIZE = new Rect(10,10,150,100);
-        private static readonly Rect BUTTON_SIZE = new Rect(850, 10, 250, 120);
+        private static readonly Rect TEXT_SIZE = new(10,10,150,100);
+        private static readonly Rect BUTTON_SIZE = new(850, 10, 250, 120);
 
         private static readonly int TEXT_STEP = 25;
         private static readonly int BUTTON_STEP = 140;
+        
+        [SerializeField] private bool _isTextEnabled;
+        [SerializeField] private bool _isButtonsEnabled; 
         
         private ICardLoopFacade _cardLoop;
         private IActorsControllerFacade _actorsController;
@@ -23,15 +26,24 @@ namespace GameDebug
 
         private bool _isWin;
         private bool _isDefeat;
-        
+
         private void Start()
         {
             _cardLoop = Battle.Instance.GetCardLoopFacade();
             _actorsController = Battle.Instance.GetActorsControllerFacade();
             _hand = _cardLoop.GetHand();
 
-            Battle.Instance.OnWin += () => _isWin = true;
-            Battle.Instance.OnDefeat += () => _isDefeat = true;
+            Battle.Instance.OnEndGame += (isWin) =>
+            {
+                if (isWin)
+                {
+                    _isWin = true;
+                }
+                else
+                {
+                    _isDefeat = true;
+                }
+            };
         }
 
         void OnGUI()
@@ -42,7 +54,7 @@ namespace GameDebug
 
         private void UpdateButtons()
         {
-            if (_isDefeat || _isWin)
+            if (_isDefeat || _isWin || !_isButtonsEnabled)
             {
                 return;
             }
@@ -69,7 +81,7 @@ namespace GameDebug
                 string cardText = cardConfig.configName;
                 cardText += "\n Actions:";
                 
-                foreach (var action in cardConfig.actions)
+                foreach (GameActionData action in cardConfig.actions)
                 {
                     cardText += $"{action.config.configName} {action.power} \n";
                 }
@@ -137,6 +149,11 @@ namespace GameDebug
 
         private void UpdateText()
         {
+            if (!_isTextEnabled)
+            {
+                return;
+            }
+            
             GUIStyle style = new()
             {
                 alignment = TextAnchor.UpperLeft,
@@ -177,7 +194,7 @@ namespace GameDebug
 
             UpdateRectPosition(ref textsRect, TEXT_STEP * 5);
 
-            foreach (var enemy in _actorsController.GetEnemies())
+            foreach (Actor enemy in _actorsController.GetEnemies())
             {
                 ActorConfig enemyConfig = enemy.GetConfig();
                 string enemyInfo = "";

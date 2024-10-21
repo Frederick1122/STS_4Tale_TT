@@ -1,4 +1,5 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,17 +7,17 @@ namespace UI.BattleUI
 {
     public class BattleUIView : UIView
     {
-        private const string WAVE_TEXT = "Wave";
+        private const string WAVE_TEXT = "Rooms";
         private const string DECK_TEXT = "Card in deck";
         private const string DUMP_TEXT = "Card in dump";
         private const string ENERGY_TEXT = "Energy";
         
         public event Action OnEndTurn = delegate {  };
         
-        [SerializeField] private Text _wave;
-        [SerializeField] private Text _deck;
-        [SerializeField] private Text _dump;
-        [SerializeField] private Text _energy;
+        [SerializeField] private TMP_Text _wave;
+        [SerializeField] private TMP_Text _deck;
+        [SerializeField] private TMP_Text _dump;
+        [SerializeField] private TMP_Text _energy;
 
         [SerializeField] private Button _endTurnButton;
 
@@ -26,9 +27,9 @@ namespace UI.BattleUI
             base.Init(uiModel);
         }
 
-        private void OnDestroy()
+        public override void Terminate()
         {
-            _endTurnButton?.onClick.RemoveAllListeners();
+            _endTurnButton.onClick.RemoveAllListeners();
         }
 
         public override void UpdateView(UIModel uiModel)
